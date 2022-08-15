@@ -34,7 +34,7 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 				logger.Error(err)
 				return
 			} else {
-				logger.Info("exec %s complete", enum.CMD.Sh)
+				logger.Infof("exec %s complete", enum.CMD.Sh)
 			}
 		}
 		if len(enum.CMD.File) > 0 {
@@ -51,7 +51,7 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 				logger.Error(err)
 				return
 			}
-			logger.Info("exec %s complete", enum.CMD.File)
+			logger.Infof("exec %s complete", enum.CMD.File)
 		}
 
 	}
