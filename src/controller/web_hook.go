@@ -1,11 +1,14 @@
 package controller
 
 import (
-	"io/ioutil"
+	"bufio"
+	"context"
+	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"os/exec"
-	"strings"
+	"sync"
 	"webhook/src/global/enum"
 	"webhook/src/logger"
 	"webhook/src/util"
@@ -18,57 +21,125 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 	UserAgent := request.Header.Get("User-Agent")
 	Token := request.Header.Get("X-Gitee-Token")
 	res := "success"
+	result.Success(res)
 	if defaultConfig.ContentType == ContentType && defaultConfig.UserAgent == UserAgent && defaultConfig.Token == Token {
 		if len(enum.CMD.Sh) > 0 {
-			logger.Info("sh:", enum.CMD.Sh)
-			shell := strings.Fields(enum.CMD.Sh)
-			bytes, err := Cmd(shell[0], shell[1:]...)
+			logger.Infof("exec %s", enum.CMD.Sh)
+			ctx, cancel := context.WithCancel(context.Background())
+			defer func() {
+				cancel()
+			}()
+			err := Command(ctx, enum.CMD.Sh)
 			if err != nil {
-				logger.Errorf("sh exec err:%v", err)
+				logger.Error(err)
+				return
+			} else {
+				logger.Info("exec %s complete", enum.CMD.Sh)
 			}
-			res = string(bytes)
-			logger.Info("output:\n", res)
 		}
 		if len(enum.CMD.File) > 0 {
-			logger.Info("file: ", enum.CMD.File)
-			err := os.Chmod(enum.CMD.File, 0777)
-			if err != nil {
+			logger.Infof("exec %s", enum.CMD.File)
+			if err := os.Chmod(enum.CMD.File, 0777); err != nil {
 				logger.Errorf("file chmod err:%v", err)
 			}
-			bytes, err := Cmd(enum.CMD.File)
+			ctx, cancel := context.WithCancel(context.Background())
+			defer func() {
+				cancel()
+			}()
+			err := Command(ctx, enum.CMD.File)
 			if err != nil {
-				logger.Errorf("file exec err:%v", err)
+				logger.Error(err)
+				return
 			}
-			res = string(bytes)
-			logger.Info("output:\n", res)
+			logger.Info("exec %s complete", enum.CMD.File)
+		}
+
+	}
+}
+
+func Command(ctx context.Context, cmd string) error {
+	//c := exec.CommandContext(ctx, "cmd", "/C", cmd) // windows
+	c := exec.CommandContext(ctx, "bash", "-c", cmd) // mac linux
+	stdout, err := c.StdoutPipe()
+	if err != nil {
+		return err
+	}
+	stderr, err := c.StderrPipe()
+	if err != nil {
+		return err
+	}
+	var wg sync.WaitGroup
+	// 因为有2个任务, 一个需要读取stderr 另一个需要读取stdout
+	wg.Add(2)
+	go read(ctx, &wg, stderr)
+	go read(ctx, &wg, stdout)
+	// 这里一定要用start,而不是run 详情请看下面的图
+	err = c.Start()
+	// 等待任务结束
+	wg.Wait()
+	return err
+}
+
+func read(ctx context.Context, wg *sync.WaitGroup, std io.ReadCloser) {
+	reader := bufio.NewReader(std)
+	defer wg.Done()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			readString, err := reader.ReadString('\n')
+			if err != nil || err == io.EOF {
+				return
+			}
+			fmt.Print(readString)
 		}
 	}
-	result.Success(res)
 }
 
-func Cmd(name string, arg ...string) (out []byte, err error) {
-	//// 5秒超时
-	//ctx, cancelFunc := context.WithTimeout(context.Background(), time.Duration(15)*time.Second)
-	//cmd := exec.CommandContext(ctx, name, arg...)
-	cmd := exec.Command(name, arg...)
-	stdout, err := cmd.StdoutPipe()
-	if err != nil { //获取输出对象，可以从该对象中读取输出结果
-		return nil, err
-	}
-	defer stdout.Close() // 保证关闭输出流
-	//defer func() {
-	//	cancelFunc()
-	//	_ = stdout.Close()
-	//	_ = cmd.Wait()
-	//}()
-
-	if err := cmd.Start(); err != nil { // 运行命令
-		return nil, err
-	}
-
-	if opBytes, err := ioutil.ReadAll(stdout); err != nil { // 读取输出结果
-		return nil, err
-	} else {
-		return opBytes, nil
-	}
-}
+//func Command(cmd string) error {
+//	//c := exec.Command("cmd", "/C", cmd) 	// windows
+//	c := exec.Command("bash", "-c", cmd) // mac or linux
+//	stdout, err := c.StdoutPipe()
+//	if err != nil {
+//		return err
+//	}
+//	var wg sync.WaitGroup
+//	wg.Add(1)
+//	go func() {
+//		defer wg.Done()
+//		reader := bufio.NewReader(stdout)
+//		for {
+//			readString, err := reader.ReadString('\n')
+//			if err != nil || err == io.EOF {
+//				return
+//			}
+//			byte2String := ConvertByte2String([]byte(readString), UTF8)
+//			fmt.Print(byte2String)
+//		}
+//	}()
+//	err = c.Start()
+//	wg.Wait()
+//	return err
+//}
+//
+//type Charset string
+//
+//const (
+//	UTF8    = Charset("UTF-8")
+//	GB18030 = Charset("GB18030")
+//)
+//
+//func ConvertByte2String(byte []byte, charset Charset) string {
+//	var str string
+//	switch charset {
+//	case GB18030:
+//		var decodeBytes, _ = simplifiedchinese.GB18030.NewDecoder().Bytes(byte)
+//		str = string(decodeBytes)
+//	case UTF8:
+//		fallthrough
+//	default:
+//		str = string(byte)
+//	}
+//	return str
+//}
