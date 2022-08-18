@@ -24,6 +24,6 @@ func Welcome() {
 	println("███╗   ███╗███████╗ █████╗\n████╗ ████║██╔════╝██╔══██╗\n██╔████╔██║███████╗███████║\n██║╚██╔╝██║╚════██║██╔══██║\n██║ ╚═╝ ██║███████║██║  ██║\n╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝\n")
 	println("\033[91;1mMSA 自动部署工具 v" + enum.VERSION + "\033[0m\r\n")
 	// 当前版本
-	logger.Infof("start webhook v%s", enum.VERSION)
-	logger.Infof("go version %s", runtime.Version())
+	logger.Infof("start webhook v%s ", enum.VERSION)
+	logger.Infof("go version %s ", runtime.Version())
 }
