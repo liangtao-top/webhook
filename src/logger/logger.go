@@ -24,6 +24,7 @@ import (
 	"os"
 	"sync"
 	"time"
+	"webhook/src/config"
 )
 
 var (
@@ -77,7 +78,7 @@ func init() {
 		MessageKey:     "message",
 		StacktraceKey:  "stacktrace",
 		EncodeLevel:    zapcore.CapitalColorLevelEncoder,
-		EncodeTime:     zapcore.ISO8601TimeEncoder,
+		EncodeTime:     zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05.000"),
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
@@ -147,11 +148,17 @@ func BuildLoggerConfig(clientConfig constant.ClientConfig) Config {
 //}
 
 // InitLogger is init global logger for nacos
-func InitLogger(config Config) (err error) {
+//func InitLogger(config Config) (err error) {
+//	logLock.Lock()
+//	defer logLock.Unlock()
+//	logger, err = InitNacosLogger(config)
+//	return
+//}
+
+func InitLogger(config *config.Logger) {
 	logLock.Lock()
 	defer logLock.Unlock()
-	logger, err = InitNacosLogger(config)
-	return
+	_, _ = InitMsaLogger(config)
 }
 
 // InitNacosLogger is init nacos default logger
@@ -159,6 +166,17 @@ func InitNacosLogger(config Config) (Logger, error) {
 	logLevel := getLogLevel(config.Level)
 	encoder := getEncoder()
 	writer := config.getLogWriter()
+	core := zapcore.NewCore(zapcore.NewConsoleEncoder(encoder),
+		zapcore.NewMultiWriteSyncer(writer, zapcore.AddSync(os.Stdout)), logLevel)
+	zaplogger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+	return &NacosLogger{zaplogger.Sugar()}, nil
+}
+
+func InitMsaLogger(config *config.Logger) (Logger, error) {
+	logLevel := getLogLevel(config.LogLevel)
+	encoder := getEncoder()
+	file, _ := os.Create(config.LogDir)
+	writer := zapcore.AddSync(file)
 	core := zapcore.NewCore(zapcore.NewConsoleEncoder(encoder),
 		zapcore.NewMultiWriteSyncer(writer, zapcore.AddSync(os.Stdout)), logLevel)
 	zaplogger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))

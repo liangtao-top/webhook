@@ -16,22 +16,8 @@ WebHook:
   Token: abon123
 
 Logger:
-  # 日志存储路径
-  LogDir: "./logs"
   # 日志默认级别，值必须是：debug,info,warn,error，默认值是info
   LogLevel: "debug"
+  # 日志存储路径
+  LogDir: "./logs"
 
-
-Nacos:
-  Server:
-    IpAddr: "192.168.0.204"
-    ContextPath: "/nacos"
-    Port: 8848
-    Scheme: "http"
-  Client:
-    NamespaceId: "public"
-    TimeoutMs: 5000
-    NotLoadCacheAtStart: true
-    LogDir: "./logs"
-    CacheDir: "/tmp/nacos/cache"
-    LogLevel: "debug"

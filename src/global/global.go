@@ -1,12 +1,12 @@
 package global
 
 import (
-	"fmt"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
 	"runtime"
 	"webhook/src/global/enum"
+	"webhook/src/logger"
 )
 
 func IniConfigFromYaml() {
@@ -21,7 +21,9 @@ func IniConfigFromYaml() {
 }
 
 func Welcome() {
+	println("███╗   ███╗███████╗ █████╗\n████╗ ████║██╔════╝██╔══██╗\n██╔████╔██║███████╗███████║\n██║╚██╔╝██║╚════██║██╔══██║\n██║ ╚═╝ ██║███████║██║  ██║\n╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝\n")
+	println("\033[91;1mMSA 自动部署工具 v" + enum.VERSION + "\033[0m\r\n")
 	// 当前版本
-	fmt.Printf("start webhook v%s \n", enum.VERSION)
-	fmt.Printf("go version %s \n", runtime.Version())
+	logger.Infof("start webhook v%s", enum.VERSION)
+	logger.Infof("go version %s", runtime.Version())
 }

@@ -5,14 +5,19 @@ import (
 	"webhook/src/global"
 	"webhook/src/global/enum"
 	"webhook/src/global/http"
+	"webhook/src/logger"
 )
 
 func main() {
-	global.Welcome()
 	// 初始化配置
 	global.IniConfigFromYaml()
-	// 解析命令行
+	// 初始化日志
+	logger.InitLogger(enum.CONFIG.Logger)
+	// 启动Banner
+	global.Welcome()
+	// 初始化指令
 	initCommand()
+	// 解析指令
 	flag.Parse()
 	// Http 服务
 	http.Start()
