@@ -19,16 +19,27 @@ cd webhook
 ./dist/webhook.exe -sh "git status"
 ~~~
 
-## 运行参数
+## 参数
 
 ~~~
-  -port uint64
-  -p uint64
-        监听端口
-  -sh
+  -p uint
+        Http服务端口 (default 9527)
+  -port uint
+        Http服务端口 (default 9527)
   -cmd string
-        预执行指令
-  -file string
+        WebHook预执行指令
+  -sh string
+        WebHook预执行指令
   -f string
-        预执行脚本文件路径
+        WebHook预执行文件
+  -file string
+        WebHook预执行文件
+  -t uint
+        定时器预执行间隔，单位：秒 (default 86400)
+  -ticker uint
+        定时器预执行间隔，单位：秒 (default 86400)
+  -c string
+        定时器预执行文件
+  -cron string
+        定时器预执行文件
 ~~~

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"webhook/src/controller"
 	"webhook/src/global"
 	"webhook/src/global/http"
 	"webhook/src/logger"
@@ -18,6 +19,8 @@ func main() {
 	global.InitCommand()
 	// 解析指令
 	flag.Parse()
+	// 任务定时器
+	go controller.Cron()
 	// Http 服务
 	http.Start()
 }

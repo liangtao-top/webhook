@@ -28,7 +28,7 @@ func Start() {
 	})
 	// 禁用客户端连接缓存到连接池
 	//http.DefaultTransport.(*http.Transport).DisableKeepAlives = true
-	logger.Infof("Http server listen %s:%+v", enum.CONFIG.Server.Address, enum.CONFIG.Server.Port)
+	logger.Infof("Http server listen %s:%+v File:%s ", enum.CONFIG.Server.Address, enum.CONFIG.Server.Port, enum.CMD.File)
 	if err := server.ListenAndServe(); err != nil {
 		logger.Error("Http server 服务失败\n", err)
 		return
