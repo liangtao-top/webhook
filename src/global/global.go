@@ -1,6 +1,7 @@
 package global
 
 import (
+	"flag"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
@@ -9,7 +10,7 @@ import (
 	"webhook/src/logger"
 )
 
-func IniConfigFromYaml() {
+func InitConfig() {
 	file, err := ioutil.ReadFile(enum.RootPath + string(os.PathSeparator) + "config.yaml")
 	if err != nil {
 		panic(err)
@@ -18,6 +19,15 @@ func IniConfigFromYaml() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func InitCommand() {
+	flag.Uint64Var(&enum.CMD.Port, "p", 0, "Http服务端口")
+	flag.Uint64Var(&enum.CMD.Port, "port", 0, "Http服务端口")
+	flag.StringVar(&enum.CMD.Sh, "sh", "", "WebHook预执行指令")
+	flag.StringVar(&enum.CMD.Sh, "cmd", "", "WebHook预执行指令")
+	flag.StringVar(&enum.CMD.File, "f", "", "WebHook预执行文件")
+	flag.StringVar(&enum.CMD.File, "file", "", "WebHook预执行文件")
 }
 
 func Welcome() {
