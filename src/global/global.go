@@ -22,6 +22,8 @@ func InitConfig() {
 }
 
 func InitCommand() {
+	flag.BoolVar(&enum.CMD.Daemon, "d", false, "进程守护")
+	flag.BoolVar(&enum.CMD.Daemon, "daemon", false, "进程守护")
 	flag.Uint64Var(&enum.CMD.Port, "p", 0, "Http服务端口")
 	flag.Uint64Var(&enum.CMD.Port, "port", 0, "Http服务端口")
 	flag.StringVar(&enum.CMD.Sh, "sh", "", "WebHook预执行指令")

@@ -31,4 +31,5 @@ type CMD struct {
 	File   string // 文件路径
 	Ticker int64  // 定时器执行间隔
 	Cron   string // 定时器执行文件
+	Daemon bool   // 进程守护
 }
