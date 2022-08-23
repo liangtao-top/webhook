@@ -20,9 +20,13 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 	ContentType := request.Header.Get("Content-Type")
 	UserAgent := request.Header.Get("User-Agent")
 	Token := request.Header.Get("X-Gitee-Token")
-	res := "success"
-	result.Success(res)
-	if defaultConfig.ContentType == ContentType && defaultConfig.UserAgent == UserAgent && defaultConfig.Token == Token {
+	b := defaultConfig.ContentType == ContentType && defaultConfig.UserAgent == UserAgent && defaultConfig.Token == Token
+	s := "success"
+	if !b {
+		s = "fail"
+	}
+	result.Success(s)
+	if b {
 		if len(enum.CMD.Sh) > 0 {
 			logger.Infof("exec %s", enum.CMD.Sh)
 			ctx, cancel := context.WithCancel(context.Background())
