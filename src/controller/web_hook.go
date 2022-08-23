@@ -27,11 +27,11 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 	sign := util.GenHmacSha256(Timestamp+"\n"+enum.CONFIG.WebHook.Token, enum.CONFIG.WebHook.Token)
 	logger.Debugf("%s|%s", enum.CMD.Token, Token, sign)
 	b := defaultConfig.ContentType == ContentType && defaultConfig.UserAgent == UserAgent && Token == sign
-	s := "success"
-	if !b {
-		s = "fail"
+	if b {
+		result.Success("success")
+	} else {
+		result.Error(enum.CALL_ERROR, "fail")
 	}
-	result.Success(s)
 	if b {
 		if len(enum.CMD.Sh) > 0 {
 			logger.Infof("exec %s", enum.CMD.Sh)
