@@ -26,6 +26,7 @@ func InitCommand() {
 	flag.BoolVar(&enum.CMD.Daemon, "daemon", false, "进程守护")
 	flag.Uint64Var(&enum.CMD.Port, "p", 0, "Http服务端口")
 	flag.Uint64Var(&enum.CMD.Port, "port", 0, "Http服务端口")
+	flag.StringVar(&enum.CMD.Context, "context", "", "Http服务上下文路径")
 	flag.StringVar(&enum.CMD.Sh, "sh", "", "WebHook预执行指令")
 	flag.StringVar(&enum.CMD.Sh, "cmd", "", "WebHook预执行指令")
 	flag.StringVar(&enum.CMD.File, "f", "", "WebHook预执行文件")
@@ -34,6 +35,7 @@ func InitCommand() {
 	flag.StringVar(&enum.CMD.Cron, "cron", "", "定时器预执行文件")
 	flag.Int64Var(&enum.CMD.Ticker, "t", 86400, "定时器预执行间隔，单位：秒")
 	flag.Int64Var(&enum.CMD.Ticker, "ticker", 86400, "定时器预执行间隔，单位：秒")
+	flag.StringVar(&enum.CMD.Token, "token", "", "用户的 WebHook 密钥")
 }
 
 func Welcome() {

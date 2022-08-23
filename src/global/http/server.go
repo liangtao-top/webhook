@@ -21,11 +21,10 @@ func Start() {
 	// favicon.ico
 	http.HandleFunc("/favicon.ico", favicon)
 	//注册路由  func是回调函数，用于路由的响应，
+	if len(enum.CMD.Context) > 0 {
+		enum.CONFIG.Server.Context = enum.CMD.Context
+	}
 	http.HandleFunc(enum.CONFIG.Server.Context, handler(mercari.GetItems))
-	//请求指定路由，返回指定结果
-	http.HandleFunc("/name", func(writer http.ResponseWriter, request *http.Request) {
-		_, _ = io.WriteString(writer, "这是/name返回的数据")
-	})
 	// 禁用客户端连接缓存到连接池
 	//http.DefaultTransport.(*http.Transport).DisableKeepAlives = true
 	logger.Infof("Http server listen %s:%+v File:%s ", enum.CONFIG.Server.Address, enum.CONFIG.Server.Port, enum.CMD.File)

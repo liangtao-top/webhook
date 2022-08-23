@@ -19,8 +19,14 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 	result := util.Result{Writer: writer}
 	ContentType := request.Header.Get("Content-Type")
 	UserAgent := request.Header.Get("User-Agent")
+	Timestamp := request.Header.Get("X-Gitee-Timestamp")
 	Token := request.Header.Get("X-Gitee-Token")
-	b := defaultConfig.ContentType == ContentType && defaultConfig.UserAgent == UserAgent && defaultConfig.Token == Token
+	if len(enum.CMD.Token) > 0 {
+		enum.CONFIG.WebHook.Token = enum.CMD.Token
+	}
+	sign := util.GenHmacSha256(Timestamp+"\n"+enum.CONFIG.WebHook.Token, enum.CONFIG.WebHook.Token)
+	logger.Debugf("%s|%s", enum.CMD.Token, Token, sign)
+	b := defaultConfig.ContentType == ContentType && defaultConfig.UserAgent == UserAgent && Token == sign
 	s := "success"
 	if !b {
 		s = "fail"
@@ -100,50 +106,3 @@ func read(ctx context.Context, wg *sync.WaitGroup, std io.ReadCloser) {
 		}
 	}
 }
-
-//func Command(cmd string) error {
-//	//c := exec.Command("cmd", "/C", cmd) 	// windows
-//	c := exec.Command("bash", "-c", cmd) // mac or linux
-//	stdout, err := c.StdoutPipe()
-//	if err != nil {
-//		return err
-//	}
-//	var wg sync.WaitGroup
-//	wg.Add(1)
-//	go func() {
-//		defer wg.Done()
-//		reader := bufio.NewReader(stdout)
-//		for {
-//			readString, err := reader.ReadString('\n')
-//			if err != nil || err == io.EOF {
-//				return
-//			}
-//			byte2String := ConvertByte2String([]byte(readString), UTF8)
-//			fmt.Print(byte2String)
-//		}
-//	}()
-//	err = c.Start()
-//	wg.Wait()
-//	return err
-//}
-//
-//type Charset string
-//
-//const (
-//	UTF8    = Charset("UTF-8")
-//	GB18030 = Charset("GB18030")
-//)
-//
-//func ConvertByte2String(byte []byte, charset Charset) string {
-//	var str string
-//	switch charset {
-//	case GB18030:
-//		var decodeBytes, _ = simplifiedchinese.GB18030.NewDecoder().Bytes(byte)
-//		str = string(decodeBytes)
-//	case UTF8:
-//		fallthrough
-//	default:
-//		str = string(byte)
-//	}
-//	return str
-//}

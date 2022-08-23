@@ -13,8 +13,7 @@ WebHook:
   # 固定为 git-oschina-hook，可用于标识为来自 gitee 的请求
   UserAgent: git-oschina-hook
   # 用户新建 WebHook 时提供的密码或根据提供的签名密钥计算后的签名
-  Token: abon888
-
+  Token: 123456
 Logger:
   # 日志默认级别，值必须是：debug,info,warn,error，默认值是info
   LogLevel: "debug"

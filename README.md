@@ -27,6 +27,8 @@ cd webhook
         Http服务端口 (default 9527)
   -port uint
         Http服务端口 (default 9527)
+  -context string
+        Http服务上下文路径 (default /webhook)
   -cmd string
         WebHook预执行指令
   -sh string
@@ -43,6 +45,8 @@ cd webhook
         定时器预执行文件
   -cron string
         定时器预执行文件
+  -token string
+        用户的 WebHook 密钥
 ~~~
 
 ## 常见问题
