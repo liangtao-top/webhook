@@ -32,6 +32,7 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 	} else {
 		result.Error(enum.CALL_ERROR, "fail")
 	}
+	defer request.Body.Close()
 	if b {
 		if len(enum.CMD.Sh) > 0 {
 			logger.Infof("exec %s", enum.CMD.Sh)

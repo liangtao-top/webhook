@@ -11,7 +11,6 @@ import (
 func Cron() {
 	logger.Infof("定时任务执行间隔 %+v 秒 File:%s ", enum.CMD.Ticker, enum.CMD.Cron)
 	ticker := time.NewTicker(time.Duration(int64(time.Second) * enum.CMD.Ticker))
-	defer ticker.Stop()
 	for range ticker.C {
 		Affair(enum.CMD.Cron)
 	}
