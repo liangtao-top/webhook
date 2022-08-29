@@ -33,8 +33,6 @@ func InitCommand() {
 	flag.StringVar(&enum.CMD.File, "file", "", "WebHook预执行文件")
 	flag.StringVar(&enum.CMD.Cron, "c", "", "定时器预执行文件")
 	flag.StringVar(&enum.CMD.Cron, "cron", "", "定时器预执行文件")
-	flag.Int64Var(&enum.CMD.Ticker, "t", 86400, "定时器预执行间隔，单位：秒")
-	flag.Int64Var(&enum.CMD.Ticker, "ticker", 86400, "定时器预执行间隔，单位：秒")
 	flag.StringVar(&enum.CMD.Token, "token", "", "用户的 WebHook 密钥")
 }
 

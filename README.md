@@ -42,9 +42,9 @@ cd webhook
   -ticker uint
         定时器预执行间隔，单位：秒 (default 86400)
   -c string
-        定时器预执行文件
+        定时器指令，【脚本文件:执行间隔（单位秒）】 数据库备份示例：-c "/app/script/backup-mysql.sh:3600"
   -cron string
-        定时器预执行文件
+        定时器指令，多文件示例：-cron "/app/script/backup-mysql.sh:3600,/app/script/backup-www.sh:86400"
   -token string
         用户的 WebHook 密钥
 ~~~
