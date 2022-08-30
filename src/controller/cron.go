@@ -12,8 +12,9 @@ import (
 
 func Cron() {
 	if enum.CMD.Cron != "" {
-		for _, cron := range strings.Split(enum.CMD.Cron, ",") {
-			cron = strings.Trim(cron, "")
+		arr := strings.Split(enum.CMD.Cron, ",")
+		for i := 0; i < len(arr); i++ {
+			cron := arr[i]
 			if cron != "" {
 				arr := strings.Split(cron, ":")
 				logger.Infof("定时任务执行间隔 %+v 秒 File:%s ", arr[1], arr[0])
@@ -21,10 +22,12 @@ func Cron() {
 				if err != nil {
 					return
 				}
-				ticker := time.NewTicker(time.Duration(int64(time.Second) * parseInt))
-				for range ticker.C {
-					Affair(arr[0])
-				}
+				go func() {
+					ticker := time.NewTicker(time.Duration(int64(time.Second) * parseInt))
+					for range ticker.C {
+						Affair(arr[0])
+					}
+				}()
 			}
 		}
 	}
