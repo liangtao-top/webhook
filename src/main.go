@@ -2,6 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 	"webhook/src/controller"
 	"webhook/src/global"
 	"webhook/src/global/enum"
@@ -22,8 +26,23 @@ func main() {
 	// 解析指令
 	flag.Parse()
 	logger.Debug("\n", util.ToJsonString(enum.CMD, true))
+	// Http 服务
+	go http.Start()
 	// 任务定时器
 	go controller.Cron()
-	// Http 服务
-	http.Start()
+
+	// 监听退出序号
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+	// 设置要接收的信号
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		sig := <-sigs
+		fmt.Println()
+		logger.Info(sig)
+		done <- true
+	}()
+	<-done
+	logger.Infof("exiting webhook.")
 }

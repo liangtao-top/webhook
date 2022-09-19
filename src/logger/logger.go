@@ -91,9 +91,11 @@ func BuildLoggerConfig(clientConfig *config.Logger) Config {
 	loggerConfig := Config{
 		Level: clientConfig.LogLevel,
 	}
+	currentTime := time.Now()
 	loggerConfig.LogRollingConfig = &lumberjack.Logger{
-		Filename: clientConfig.LogDir + string(os.PathSeparator) + "webhook.log",
+		Filename: clientConfig.LogDir + string(os.PathSeparator) + currentTime.Format("2006-01-02 15:04:05.999") + ".log",
 	}
+	logger.Debug(loggerConfig.LogRollingConfig.Filename)
 	return loggerConfig
 }
 

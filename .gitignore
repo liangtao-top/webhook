@@ -16,3 +16,4 @@
 *.log
 *.env
 service
+/tests

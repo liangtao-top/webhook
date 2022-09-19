@@ -32,7 +32,7 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 	} else {
 		result.Error(enum.CALL_ERROR, "fail")
 	}
-	defer request.Body.Close()
+	//defer request.Body.Close()
 	if b {
 		if len(enum.CMD.Sh) > 0 {
 			logger.Infof("exec %s", enum.CMD.Sh)
@@ -97,10 +97,12 @@ func read(ctx context.Context, wg *sync.WaitGroup, std io.ReadCloser) {
 	for {
 		select {
 		case <-ctx.Done():
+			logger.Infof("read 关闭")
 			return
 		default:
 			readString, err := reader.ReadString('\n')
 			if err != nil || err == io.EOF {
+				logger.Infof("read 关闭2")
 				return
 			}
 			fmt.Print(readString)
