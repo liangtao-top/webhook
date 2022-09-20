@@ -15,5 +15,3 @@
 # vendor/
 *.log
 *.env
-service
-/tests
