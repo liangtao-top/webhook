@@ -15,16 +15,17 @@ import (
 )
 
 func main() {
+	// 初始化指令
+	global.InitCommand()
+	// 解析指令
+	flag.Parse()
 	// 初始化配置
 	global.InitConfig()
 	// 初始化日志
 	logger.InitLogger()
 	// 启动Banner
 	global.Welcome()
-	// 初始化指令
-	global.InitCommand()
-	// 解析指令
-	flag.Parse()
+	// 打印指令
 	logger.Debug("\n", util.ToJsonString(enum.CMD, true))
 	// Http 服务
 	go http.Start()

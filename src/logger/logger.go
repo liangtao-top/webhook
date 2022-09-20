@@ -21,6 +21,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 	"webhook/src/config"
@@ -92,10 +93,12 @@ func BuildLoggerConfig(clientConfig *config.Logger) Config {
 		Level: clientConfig.LogLevel,
 	}
 	currentTime := time.Now()
-	loggerConfig.LogRollingConfig = &lumberjack.Logger{
-		Filename: clientConfig.LogDir + string(os.PathSeparator) + currentTime.Format("2006-01-02 15:04:05.999") + ".log",
+	if enum.CMD.Port > 0 {
+		enum.CONFIG.Server.Port = enum.CMD.Port
 	}
-	logger.Debug(loggerConfig.LogRollingConfig.Filename)
+	loggerConfig.LogRollingConfig = &lumberjack.Logger{
+		Filename: clientConfig.LogDir + string(os.PathSeparator) + strconv.FormatUint(enum.CONFIG.Server.Port, 10) + string(os.PathSeparator) + currentTime.Format("2006-01-02 15_04_05.999") + ".log",
+	}
 	return loggerConfig
 }
 
