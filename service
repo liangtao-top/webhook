@@ -13,12 +13,26 @@ start() {
   ./script/dev.sh $cmd
 }
 
+function logs() {
+  for dir in $(ls $1); do
+    if [ -d $1"/"$dir ]; then
+      for file in $(ls -t $1"/"$dir); do
+        log=$1"/"$dir"/"$file
+        echo $log
+        tail -f $log &
+        break
+      done
+    fi
+  done
+}
+
 #启动服务
 up() {
   vehicle_repid=$(ps -ef | grep webhook-linux | grep -v 'grep' | awk '{print $2}')
   if [ "$vehicle_repid" ]; then
-    echo "$(ps -ef | grep webhook-linux | grep -v 'grep')"
-    echo "服务已启动"
+    #    echo "$(ps -ef | grep webhook-linux | grep -v 'grep')"
+    #    echo "服务已启动"
+    logs ./logs
   else
     start
     if [ "$cmd" == "-d" ]; then
@@ -65,7 +79,7 @@ restart) #重启程序
   restart
   ;;
 status) #查询状态
-  echo "$(ps -ef | grep webhook-linux | grep -v 'grep')"
+  echo "$(ps aux | grep webhook-linux | grep -v 'grep')"
   ;;
 *)
   echo "Error command"

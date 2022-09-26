@@ -3,7 +3,6 @@ package controller
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -97,15 +96,13 @@ func read(ctx context.Context, wg *sync.WaitGroup, std io.ReadCloser) {
 	for {
 		select {
 		case <-ctx.Done():
-			logger.Infof("read 关闭")
 			return
 		default:
 			readString, err := reader.ReadString('\n')
 			if err != nil || err == io.EOF {
-				logger.Infof("read 关闭2")
 				return
 			}
-			fmt.Print(readString)
+			logger.Debug(readString)
 		}
 	}
 }

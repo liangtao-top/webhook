@@ -97,7 +97,7 @@ func BuildLoggerConfig(clientConfig *config.Logger) Config {
 		enum.CONFIG.Server.Port = enum.CMD.Port
 	}
 	loggerConfig.LogRollingConfig = &lumberjack.Logger{
-		Filename: clientConfig.LogDir + string(os.PathSeparator) + strconv.FormatUint(enum.CONFIG.Server.Port, 10) + string(os.PathSeparator) + currentTime.Format("2006-01-02 15_04_05.999") + ".log",
+		Filename: clientConfig.LogDir + string(os.PathSeparator) + strconv.FormatUint(enum.CONFIG.Server.Port, 10) + string(os.PathSeparator) + currentTime.Format("2006-01-02_15_04_05.999") + ".log",
 	}
 	return loggerConfig
 }
