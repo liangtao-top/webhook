@@ -10,7 +10,7 @@ fi
 
 # 启动时执行的命令
 start() {
-  ./script/dev.sh $cmd
+  /webhook/script/dev.sh $cmd
 }
 
 function logs() {
@@ -32,7 +32,7 @@ up() {
   if [ "$vehicle_repid" ]; then
     #    echo "$(ps -ef | grep webhook-linux | grep -v 'grep')"
     #    echo "服务已启动"
-    logs ./logs
+    logs /webhook/logs
   else
     start
     if [ "$cmd" == "-d" ]; then
