@@ -3,6 +3,7 @@ package util
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"runtime"
@@ -17,15 +18,17 @@ type Result struct {
 
 func (p *Result) Error(status int, message string) {
 	p.rpc(status, message)
-	_, _ = io.WriteString(p.Writer, message)
-	logger.Errorf(message)
+	str := fmt.Sprintf("{\"status\":%d,\"msg\":%s}", status, message)
+	_, _ = io.WriteString(p.Writer, str)
+	logger.Errorf(str)
 }
 
 func (p *Result) Success(object any) {
 	p.rpc(enum.STATUS_OK, "success")
-	js, _ := json.Marshal(object)
-	_, _ = io.WriteString(p.Writer, string(js))
-	logger.Infof(string(js))
+	jsonByte, _ := json.Marshal(object)
+	str := fmt.Sprintf("{\"status\":%d,\"msg\":%s}", enum.STATUS_OK, string(jsonByte))
+	_, _ = io.WriteString(p.Writer, str)
+	logger.Infof(str)
 }
 
 func (p *Result) Pack(data []byte) []byte {

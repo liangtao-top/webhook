@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
 	"webhook/src/global/enum"
 	"webhook/src/logger"
@@ -28,42 +29,43 @@ func GetItems(writer http.ResponseWriter, request *http.Request) {
 	b := defaultConfig.ContentType == ContentType && defaultConfig.UserAgent == UserAgent && Token == sign
 	if b {
 		result.Success("success")
+		go Handle()
 	} else {
-		result.Error(enum.CALL_ERROR, "fail")
+		result.Error(enum.CALL_ERROR, "Token fail")
 	}
-	//defer request.Body.Close()
-	if b {
-		if len(enum.CMD.Sh) > 0 {
-			logger.Infof("exec %s", enum.CMD.Sh)
-			ctx, cancel := context.WithCancel(context.Background())
-			defer func() {
-				cancel()
-			}()
-			err := Command(ctx, enum.CMD.Sh)
-			if err != nil {
-				logger.Error(err)
-				return
-			} else {
-				logger.Infof("exec %s complete", enum.CMD.Sh)
-			}
-		}
-		if len(enum.CMD.File) > 0 {
-			logger.Infof("exec %s", enum.CMD.File)
-			if err := os.Chmod(enum.CMD.File, 0777); err != nil {
-				logger.Errorf("file chmod err:%v", err)
-			}
-			ctx, cancel := context.WithCancel(context.Background())
-			defer func() {
-				cancel()
-			}()
-			err := Command(ctx, enum.CMD.File)
-			if err != nil {
-				logger.Error(err)
-				return
-			}
-			logger.Infof("exec %s complete", enum.CMD.File)
-		}
+	defer request.Body.Close()
+}
 
+func Handle() {
+	if len(enum.CMD.Sh) > 0 {
+		logger.Infof("exec %s", enum.CMD.Sh)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer func() {
+			cancel()
+		}()
+		err := Command(ctx, enum.CMD.Sh)
+		if err != nil {
+			logger.Error(err)
+			return
+		} else {
+			logger.Infof("exec %s complete", enum.CMD.Sh)
+		}
+	}
+	if len(enum.CMD.File) > 0 {
+		logger.Infof("exec %s", enum.CMD.File)
+		if err := os.Chmod(enum.CMD.File, 0777); err != nil {
+			logger.Errorf("file chmod err:%v", err)
+		}
+		ctx, cancel := context.WithCancel(context.Background())
+		defer func() {
+			cancel()
+		}()
+		err := Command(ctx, enum.CMD.File)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		logger.Infof("exec %s complete", enum.CMD.File)
 	}
 }
 
@@ -93,16 +95,17 @@ func Command(ctx context.Context, cmd string) error {
 func read(ctx context.Context, wg *sync.WaitGroup, std io.ReadCloser) {
 	reader := bufio.NewReader(std)
 	defer wg.Done()
+	logger.Debug()
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		default:
-			readString, err := reader.ReadString('\n')
-			if err != nil || err == io.EOF {
+			line, _, err := reader.ReadLine()
+			if err != nil || err == io.EOF || len(strings.TrimSpace(string(line))) == 0 {
 				return
 			}
-			logger.Debug(readString)
+			logger.Debug(string(line))
 		}
 	}
 }
