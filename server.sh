@@ -2,6 +2,9 @@
 cmd=$2
 usage="Usage: $(basename $0) (up|stop|restart|status)"
 
+#webhook脚本路径参数
+webhook_path=/app/script/bin/webhook.sh
+
 #没有输入参数时提醒内容 $#参数的个数
 if [ $# -eq 0 ]; then
   echo "please input up|stop|restart|status"
@@ -10,7 +13,7 @@ fi
 
 # 启动时执行的命令
 start() {
-  /webhook/script/dev.sh $cmd
+  $webhook_path $cmd
 }
 
 function logs() {
@@ -79,7 +82,12 @@ restart) #重启程序
   restart
   ;;
 status) #查询状态
-  echo "$(ps aux | grep webhook-linux | grep -v 'grep')"
+    vehicle_repid=$(ps -ef | grep webhook-linux | grep -v 'grep' | awk '{print $2}')
+    if [ "$vehicle_repid" ]; then
+        echo "$(ps aux | grep webhook-linux | grep -v 'grep')"
+    else
+        echo "webhook service not running!"
+    fi
   ;;
 *)
   echo "Error command"
