@@ -1,6 +1,6 @@
 #!/bin/bash
 cmd=$2
-usage="Usage: $(basename $0) (up|stop|restart|status)"
+usage="Usage: $(basename "$0") (up|stop|restart|status|logs)"
 
 #webhook脚本路径参数
 webhook_path=/app/script/bin/webhook.sh
@@ -8,23 +8,24 @@ webhook_path=/app/script/bin/webhook.sh
 #没有输入参数时提醒内容 $#参数的个数
 if [ $# -eq 0 ]; then
   echo "$usage"
-    echo "$1"
   exit
 fi
 
 # 启动时执行的命令
 start() {
-  $webhook_path $cmd
+  $webhook_path "$cmd"
 }
 
 function logs() {
-  for dir in $(ls $1); do
-    if [ -d $1"/"$dir ]; then
-      for file in $(ls -t $1"/"$dir); do
-        log=$1"/"$dir"/"$file
-        echo $log
-        tail -f $log &
-        break 2
+  ls1=$(ls -t "$1")
+  for dir in $ls1; do
+    if [ -d "$1/$dir" ]; then
+      ls2=$(ls -t "$1/$dir")
+      for file in $ls2; do
+        log="$1/$dir/$file"
+        echo "$log"
+        tail -f -n 100 "$log" &
+        break 1
       done
     fi
   done
@@ -89,6 +90,9 @@ status) #查询状态
     else
         echo "webhook service not running!"
     fi
+  ;;
+logs) #日志
+  logs /webhook/logs
   ;;
 *)
   echo "Error command"
