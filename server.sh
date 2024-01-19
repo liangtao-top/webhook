@@ -7,7 +7,8 @@ webhook_path=/app/script/bin/webhook.sh
 
 #没有输入参数时提醒内容 $#参数的个数
 if [ $# -eq 0 ]; then
-  echo "please input up|stop|restart|status"
+  echo "$usage"
+    echo "$1"
   exit
 fi
 
