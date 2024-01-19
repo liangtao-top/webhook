@@ -23,7 +23,7 @@ function logs() {
         log=$1"/"$dir"/"$file
         echo $log
         tail -f $log &
-        break
+        break 2
       done
     fi
   done
